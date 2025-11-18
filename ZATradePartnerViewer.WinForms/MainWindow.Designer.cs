@@ -270,6 +270,7 @@ namespace ZATradePartnerViewer.WinForms;
         Controls.Add(GB_Connection);
         Controls.Add(GB_SAVInfo);
         Icon = (Icon)resources.GetObject("$this.Icon");
+        MaximizeBox = false;
         Name = "MainWindow";
         FormClosing += MainWindow_FormClosing;
         Load += MainWindow_Load;

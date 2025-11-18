@@ -1,7 +1,9 @@
-using System.Text.Json;
-using ZATradePartnerViewer.Core.Connection;
 using PKHeX.Core;
 using SysBot.Base;
+using System.Diagnostics;
+using System.Text.Json;
+using ZATradePartnerViewer.Core.Connection;
+using ZATradePartnerViewer.WinForms.Subforms;
 
 namespace ZATradePartnerViewer.WinForms;
 
@@ -85,7 +87,7 @@ public partial class MainWindow : Form
 
         ConnectionWrapper = new(ConnectionConfig, UpdateStatus);
 
-        // CheckForUpdates();
+        CheckForUpdates();
     }
 
     private void Connect(CancellationToken token)
@@ -323,5 +325,67 @@ public partial class MainWindow : Form
     {
         Config.AutoCopy = CB_Auto.Checked;
         SetControlEnabledState(!CB_Auto.Checked, B_Copy);
+    }
+
+    private void CheckForUpdates()
+    {
+        Task.Run(async () =>
+        {
+            Version? latestVersion;
+            try { latestVersion = GetLatestVersion(); }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Exception while checking for latest version: {ex}");
+                return;
+            }
+
+            if (latestVersion is null || latestVersion <= CurrentVersion)
+                return;
+
+            while (!IsHandleCreated) // Wait for form to be ready
+                await Task.Delay(2_000).ConfigureAwait(false);
+            await InvokeAsync(() => NotifyNewVersionAvailable(latestVersion));
+        });
+    }
+
+    private void NotifyNewVersionAvailable(Version version)
+    {
+        Text += $" - Update v{version.Major}.{version.Minor}.{version.Build} available!";
+
+#if !DEBUG
+        using UpdateNotifPopup nup = new(CurrentVersion, version);
+        if (nup.ShowDialog() == DialogResult.OK)
+        {
+            Process.Start(new ProcessStartInfo("https://github.com/LegoFigure11/ZATradePartnerViewer/releases/")
+            {
+                UseShellExecute = true
+            });
+        }
+#endif
+    }
+
+
+    public static Version? GetLatestVersion()
+    {
+        const string endpoint = "https://api.github.com/repos/LegoFigure11/ZATradePartnerViewer/releases/latest";
+        var response = NetUtil.GetStringFromURL(new Uri(endpoint));
+        if (response is null) return null;
+
+        const string tag = "tag_name";
+        var index = response.IndexOf(tag, StringComparison.Ordinal);
+        if (index == -1) return null;
+
+        var first = response.IndexOf('"', index + tag.Length + 1) + 1;
+        if (first == 0) return null;
+
+        var second = response.IndexOf('"', first);
+        if (second == -1) return null;
+
+        var tagString = response.AsSpan()[first..second].TrimStart('v');
+
+        var patchIndex = tagString.IndexOf('-');
+        if (patchIndex != -1) tagString = tagString.ToString().Remove(patchIndex).AsSpan();
+
+        return !Version.TryParse(tagString, out var latestVersion) ? null : latestVersion;
     }
 }
