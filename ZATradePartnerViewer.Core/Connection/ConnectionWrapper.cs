@@ -47,6 +47,10 @@ public class ConnectionWrapperAsync(SwitchConnectionConfig Config, Action<string
                 _           => throw new Exception("Cannot detect Legends: Z-A running on your switch!")
             };
 
+            string v = await Connection.GetGameInfo("version", token).ConfigureAwait(false);
+            if (!v.SequenceEqual(LegendsZAGameVersion))
+                throw new Exception($"Game version is not supported. Expected version {LegendsZAGameVersion}, and current game version is {v}.");
+
             StatusUpdate("Caching Pointers...");
             PlayerMyStatusOffset = await Connection.PointerAll(myStatusPointer,  token).ConfigureAwait(false);
 
