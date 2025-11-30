@@ -10,4 +10,5 @@ public class ClientConfig
     public SwitchProtocol Protocol { get; set; } = SwitchProtocol.WiFi;
     public SystemColorMode Theme { get; set; } = SystemColorMode.Classic;
     public bool AutoCopy { get; set; } = false;
+    public bool TopMost { get; set; } = false;
 }

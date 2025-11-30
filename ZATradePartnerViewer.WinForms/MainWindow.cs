@@ -85,6 +85,8 @@ public partial class MainWindow : Form
 
         CB_Auto.Checked = Config.AutoCopy;
 
+        SetTopMost(Config.TopMost);
+
         ConnectionWrapper = new(ConnectionConfig, UpdateStatus);
 
         CheckForUpdates();
@@ -327,7 +329,8 @@ public partial class MainWindow : Form
             thread.SetApartmentState(ApartmentState.STA);
             thread.Start();
             thread.Join();
-        } catch (Exception ex)
+        }
+        catch (Exception ex)
         {
             if (ex is IndexOutOfRangeException) this.DisplayMessageBox("Nothing to copy!", "ZATradePartnerViewer Error");
             else this.DisplayMessageBox(ex.Message, "ZATradePartnerViewer Error");
@@ -366,7 +369,7 @@ public partial class MainWindow : Form
         Text += $" - Update v{version.Major}.{version.Minor}.{version.Build} available!";
 
 #if !DEBUG
-        using UpdateNotifPopup nup = new(CurrentVersion, version);
+        using UpdateNotifPopup nup = new(CurrentVersion, version, Config.TopMost);
         if (nup.ShowDialog() == DialogResult.OK)
         {
             Process.Start(new ProcessStartInfo("https://github.com/LegoFigure11/ZATradePartnerViewer/releases/")
@@ -400,5 +403,18 @@ public partial class MainWindow : Form
         if (patchIndex != -1) tagString = tagString.ToString().Remove(patchIndex).AsSpan();
 
         return !Version.TryParse(tagString, out var latestVersion) ? null : latestVersion;
+    }
+
+    private void B_PinToTop_Click(object sender, EventArgs e)
+    {
+        SetTopMost(!TopMost);
+    }
+
+    private void SetTopMost(bool topmost)
+    {
+        TopMost = topmost;
+        B_PinToTop.Text = TopMost ? "↓" : "↑";
+        TT_PinToTop.SetToolTip(B_PinToTop, $"{(TopMost ? "Unpin" : "Pin")} as top window");
+        Config.TopMost = topmost;
     }
 }

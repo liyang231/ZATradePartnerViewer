@@ -28,6 +28,7 @@ namespace ZATradePartnerViewer.WinForms;
     /// </summary>
     private void InitializeComponent()
     {
+        components = new System.ComponentModel.Container();
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
         GB_Connection = new GroupBox();
         TB_Status = new TextBox();
@@ -48,6 +49,8 @@ namespace ZATradePartnerViewer.WinForms;
         L_PartnerTID = new Label();
         B_Copy = new Button();
         CB_Auto = new CheckBox();
+        B_PinToTop = new Button();
+        TT_PinToTop = new ToolTip(components);
         GB_Connection.SuspendLayout();
         GB_SAVInfo.SuspendLayout();
         SuspendLayout();
@@ -236,7 +239,7 @@ namespace ZATradePartnerViewer.WinForms;
         // 
         B_Copy.Location = new Point(221, 117);
         B_Copy.Name = "B_Copy";
-        B_Copy.Size = new Size(239, 25);
+        B_Copy.Size = new Size(215, 25);
         B_Copy.TabIndex = 135;
         B_Copy.Text = "Copy";
         B_Copy.UseVisualStyleBackColor = true;
@@ -253,11 +256,23 @@ namespace ZATradePartnerViewer.WinForms;
         CB_Auto.UseVisualStyleBackColor = true;
         CB_Auto.CheckedChanged += CB_Auto_CheckedChanged;
         // 
+        // B_PinToTop
+        // 
+        B_PinToTop.Location = new Point(442, 117);
+        B_PinToTop.Name = "B_PinToTop";
+        B_PinToTop.Size = new Size(18, 25);
+        B_PinToTop.TabIndex = 137;
+        B_PinToTop.Text = "↑";
+        TT_PinToTop.SetToolTip(B_PinToTop, "Pin as top window");
+        B_PinToTop.UseVisualStyleBackColor = true;
+        B_PinToTop.Click += B_PinToTop_Click;
+        // 
         // MainWindow
         // 
         AutoScaleDimensions = new SizeF(7F, 15F);
         AutoScaleMode = AutoScaleMode.Font;
         ClientSize = new Size(470, 153);
+        Controls.Add(B_PinToTop);
         Controls.Add(CB_Auto);
         Controls.Add(B_Copy);
         Controls.Add(TB_PartnerTID);
@@ -303,5 +318,7 @@ namespace ZATradePartnerViewer.WinForms;
     private ComboBox CB_Theme;
     private Button B_Copy;
     private CheckBox CB_Auto;
+    private Button B_PinToTop;
+    private ToolTip TT_PinToTop;
 }
 

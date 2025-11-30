@@ -4,10 +4,12 @@ public partial class UpdateNotifPopup : Form
 {
     private readonly Version cv;
     private readonly Version nv;
-    public UpdateNotifPopup(Version currentVersion, Version newVersion)
+    private readonly bool topmost;
+    public UpdateNotifPopup(Version currentVersion, Version newVersion, bool topMost = false)
     {
         cv = currentVersion;
         nv = newVersion;
+        topmost = topMost;
         InitializeComponent();
     }
 
@@ -16,5 +18,6 @@ public partial class UpdateNotifPopup : Form
         L_Version.Text = $"Current: v{cv.Major}.{cv.Minor}.{cv.Build} | New: v{nv.Major}.{nv.Minor}.{nv.Build}";
         B_Download.Focus();
         CenterToScreen();
+        TopMost = topmost;
     }
 }
