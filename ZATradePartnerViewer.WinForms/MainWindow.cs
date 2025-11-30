@@ -220,8 +220,21 @@ public partial class MainWindow : Form
 
                     var (NID, TID, SID, OT) = await ConnectionWrapper.ReadTradePartnerData(Source.Token).ConfigureAwait(false);
 
-                    SetTextBoxText($"{NID:X16}", TB_NID);
-                    SetTextBoxText($"{SID:0000}-{TID:000000}", TB_PartnerTID);
+                    var _nid = $"{NID:X16}";
+                    var _tid = $"{TID:000000}";
+                    var _sid = $"{SID:0000}";
+
+                    if (
+                        _tid == "000000" || _tid.SequenceEqual(string.Empty) ||
+                        _sid == "0000" || _sid.SequenceEqual(string.Empty) ||
+                        _nid.Count('0') >= 6 || _nid.StartsWith("00000")
+                    )
+                    {
+                        this.DisplayMessageBox("Data looks like it might be invalid! Please double-check with the user or record manually.");
+                    }
+
+                    SetTextBoxText(_nid, TB_NID);
+                    SetTextBoxText($"{_sid}-{_tid}", TB_PartnerTID);
                     SetTextBoxText(OT, TB_PartnerOT);
 
                     if (GetCheckBoxCheckedState(CB_Auto)) Copy();
